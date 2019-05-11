@@ -57,12 +57,12 @@ if (!empty(proxyflare()->get('api_key',''))) {
         <tbody>
         <tr>
             <th scope="row"><?php _e('API Email', 'proxyflare'); ?></th>
-            <td><input type="text" name="proxyflare_api_email" value="<?php echo( proxyflare()->get('api_email','') ); ?>">
+            <td><input type="text" name="proxyflare_api_email" value="<?php echo( esc_html( proxyflare()->get('api_email','') ) ); ?>">
             </td>
         </tr>
         <tr>
             <th scope="row"><?php _e('API Key', 'proxyflare'); ?></th>
-            <td><input type="password" name="proxyflare_api_key" value="<?php echo( $password_field ); ?>">
+            <td><input type="password" name="proxyflare_api_key" value="<?php echo( esc_html( $password_field ) ); ?>">
             </td>
         </tr>
         </tbody>

@@ -16,10 +16,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin&#8217; uh?' );
 define('PROXYFLARE_VERSION','1.0');
 define('PROXYFLARE_FILE',__FILE__);
 
-// @todo REMOVE FOR PROD -> also update API URL
-
-
-
 /**
  * The core plugin class
  */
@@ -48,12 +44,10 @@ proxyflare();
 /**
  * Updater
  */
-/*
 require_once 'updater/plugin-update-checker.php';
 $myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
-	'https://github.com/dfinnema/wld-proxyflare-client/',
+	'https://github.com/whitelabelltd/proxyflare',
 	__FILE__,
 	'proxyflare'
 );
 $myUpdateChecker->setBranch('release');
-*/

@@ -1,5 +1,5 @@
 # Proxyflare
-Proxy for handling Cloudflare functions. 
+Proxy for handling Cloudflare functions for Whitelabel Digital Clients
 
 #### Why
 
@@ -7,9 +7,11 @@ Avoids having to put your Global Cloudflare API Key on end-user sites. Requires 
 
 #### Functions
 
+**Current**
 - Cache Clear
-- Development Toggle
 
+**Roadmap**
+- Development Mode Toggle
 
 ## Install
 1. Intsall Plugin

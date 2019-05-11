@@ -95,10 +95,9 @@ class PROXYFLARE {
 	 * @return bool
 	 */
 	private function wp_rocket_is_active() {
-		return false;
+		include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+		return is_plugin_active('wp-rocket/wp-rocket.php');
 	}
-
-
 
 	/**
 	 * Adds the Admin Bar 'Clear CF Cache' option if WP Rocket is not active
