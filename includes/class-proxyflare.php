@@ -68,8 +68,6 @@ class PROXYFLARE {
 		add_action('wp_loaded' , array( $this , 'admin_bar_check' ) );
 		add_action( 'wp_ajax_proxyflare_cache_clear', array( $this , 'admin_ajax_cache_clear' ) );
 
-
-
 	}
 
 	/**
