@@ -56,11 +56,13 @@ class API {
 			return false;
 		}
 
-		// Set API Url
-		$endpoint = str_replace('wld-proxyflare.local','morty.science',$endpoint);
-		$url = self::$api_url.$endpoint;
+		// Set API Url for Custom Domain
+		if (defined('PROXYFLARE_API_DOMAIN')) {
+			$endpoint_domain = self::get_domain();
+			$endpoint = str_replace($endpoint_domain,PROXYFLARE_API_DOMAIN,$endpoint);
+		}
 
-		error_log('URL: '.$url);
+		$url = self::$api_url.$endpoint;
 
 		// Set Authentication Headers and Useragent
 		$args = array(
@@ -74,9 +76,6 @@ class API {
 
 		// Make the request
 		$response = wp_safe_remote_post( $url, $args );
-
-		error_log('Response Code:'.print_r(wp_remote_retrieve_response_code($response),1));
-		error_log('Response Body:'.print_r(wp_remote_retrieve_body($response),1));
 
 		// Check Response
 		if ( !is_wp_error( $response ) ) {
