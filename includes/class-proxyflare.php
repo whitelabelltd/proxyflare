@@ -181,6 +181,12 @@ class PROXYFLARE {
 		<?php
 	}
 
+	/**
+     * Adds a settings link to the plugin row
+	 * @param $actions
+	 *
+	 * @return mixed
+	 */
 	public function plugin_settings_link( $actions ) {
 
 		array_unshift( $actions, sprintf( '<a href="%s">%s</a>', admin_url( 'options-general.php?page=proxyflare' ), __( 'Settings', 'proxyflare' ) ) );
@@ -323,7 +329,7 @@ class PROXYFLARE {
 
 	/**
 	 * Load Options
-	 * JSON in DB to unserializing risks
+	 * JSON in DB to minimize unserializing risks
 	 */
 	private function options_load() {
 		$options = get_option( $this->options_name );
@@ -341,7 +347,7 @@ class PROXYFLARE {
 
 	/**
 	 * Save Options
-	 * JSON in DB to unserializing risks
+	 * JSON in DB to minimize unserializing risks
 	 */
 	private function options_save() {
 		if (!empty($this->options)) {
@@ -387,7 +393,6 @@ class PROXYFLARE {
 	 * @param array $helpers
 	 */
 	private function load_helpers($helpers = array() ) {
-
 		$path = plugin_dir_path( PROXYFLARE_FILE ) . 'helpers/';
 		foreach ($helpers as $helper) {
 			if (file_exists($path.$helper.'.php')) {
