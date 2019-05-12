@@ -15,7 +15,7 @@ Avoids having to put your Global Cloudflare API Key on end-user sites. Requires 
 
 ## Install
 1. Intsall Plugin
-2. Under Tools > Proxyflare
+2. Under Settings > Proxyflare
 3. Enter the API Credentials and Save ( credentials can be obtained from Whitelabel Digital )
 4. Done
 
