@@ -45,14 +45,36 @@ if (!empty(proxyflare()->get('api_key',''))) {
 	$password_field = $mask;
 }
 
+// Image Locations
+$logo_path = plugin_dir_url( PROXYFLARE_FILE ) . 'assets/images/';
+
 // The Form
 ?>
 <form method="post">
 
-    <h1><?php _e('Proxyflare', 'proxyflare'); ?></h1>
+    <style type="text/css" id="proxyflare-css">
+        .wp-core-ui .button-proxyflare {
+            background: #f1943e;
+            border-color: #f39441 #F38020 #F38020;
+            box-shadow: 0 1px 0 #F38020;
+            color: #fff;
+            text-decoration: none;
+            text-shadow: unset;
+        }
+        .wp-core-ui .button-proxyflare.focus, .wp-core-ui .button-proxyflare.hover, .wp-core-ui .button-proxyflare:focus, .wp-core-ui .button-proxyflare:hover {
+            background: #f3a052;
+            border-color: #f39441;
+            color: #fff;
+        }
+    </style>
+
+
+    <p>&nbsp;</p>
+    <img src="<?php echo($logo_path); ?>logo-wp-options.png" srcset="<?php echo($logo_path); ?>logo-wp-options@2x.png 2x" alt="Proxyflare">
     <?php echo($updated_message); ?>
     <h2><?php _e('API Credentials', 'proxyflare'); ?></h2>
-    <?php _e('Enter your Proxyflare API details below. Contact Whitelabel Digital for your credentials', 'proxyflare'); ?>
+    <?php _e('Enter your Proxyflare API details below.', 'proxyflare'); ?>
+    <br><small><?php _e('Contact Whitelabel Digital for your credentials', 'proxyflare'); ?></small>
     <table class="form-table">
         <tbody>
         <tr>
@@ -68,7 +90,7 @@ if (!empty(proxyflare()->get('api_key',''))) {
         </tbody>
     </table>
 	<?php wp_nonce_field( $action ); ?>
-    <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="<?php _e('Save Changes', 'proxyflare'); ?>">
+    <p class="submit"><input type="submit" name="submit" id="submit" class="button button-proxyflare" value="<?php _e('Save Changes', 'proxyflare'); ?>">
     </p>
 </form>
 
@@ -84,7 +106,7 @@ if (proxyflare()->activated()) {
 
 	echo('<p>'.__('You can clear the cache using the button below, it automatically clears when using WP-Rocket.<br>If not using WP-Rocket you can clear the cache on any page using the admin-bar', 'proxyflare').'</p>');
 	?>
-    <div id="proxyflare_cache_clear_result" style="display: none" class="updated notice"> </div>
+    <div id="proxyflare_cache_clear_result" style="display: none" class="notice notice-info"><p id="proxyflare_cache_clear_result_text"></p></div>
     <br>
     <a href="#" class="button" id="proxyflare_button_test"><?php _e( 'Clear Cache', 'proxyflare' ); ?></a>
     <script type="text/javascript">
@@ -94,6 +116,7 @@ if (proxyflare()->activated()) {
                 var old_text = jQuery(this).text();
                 jQuery(this).text('Clearing Cache...');
                 jQuery(this).attr('disabled', true );
+                jQuery('#proxyflare_cache_clear_result').hide();
                 var data = {
                     'action': '<?php echo( $action_test ); ?>',
                     'security': '<?php echo( $nonce_test ); ?>'
@@ -102,7 +125,8 @@ if (proxyflare()->activated()) {
                 jQuery.post(ajaxurl, data, function (response) {
                     jQuery(obj_proxyflare_test).text(old_text);
                     jQuery(obj_proxyflare_test).attr('disabled', false );
-                    jQuery('#proxyflare_cache_clear_result').fadeIn().text(response);
+                    jQuery('#proxyflare_cache_clear_result').fadeIn();
+                    jQuery('#proxyflare_cache_clear_result_text').text(response);
                 });
             }
         });
