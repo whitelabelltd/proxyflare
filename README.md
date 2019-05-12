@@ -1,11 +1,11 @@
 # Proxyflare
 Proxy for handling Cloudflare functions for Whitelabel Digital Clients
 
-#### Why
+### Why
 
 Avoids having to put your Global Cloudflare API Key on end-user sites. Requires the domain added to the main Whitelabel Digital dashboard before it can be used.
 
-#### Functions
+### Functions
 
 **Current**
 - Cache Clear
@@ -21,7 +21,8 @@ Avoids having to put your Global Cloudflare API Key on end-user sites. Requires 
 
 ## How it works
 #### Manually 
-In the admin bar the user can clear the cache.
+In the admin bar the user can clear the cache.\
+Or in the settings page
 
 #### Automatic
 When WP-Rocket is installed it will clear the Cloudflare cache each time WP-Rocket clears the site cache.

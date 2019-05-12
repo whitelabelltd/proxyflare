@@ -74,6 +74,10 @@ class PROXYFLARE {
 		// Whitelist API Server
 		add_filter( 'http_request_host_is_external', array( $this , 'whitelist_api_server'), 10, 3 );
 
+		// Settings Page Link in Plugin Row
+		add_filter( 'plugin_action_links_' . plugin_basename( PROXYFLARE_FILE ), array( $this , 'plugin_settings_link' ) );
+
+
 	}
 
 	/**
@@ -175,6 +179,13 @@ class PROXYFLARE {
             });
 		</script>
 		<?php
+	}
+
+	public function plugin_settings_link( $actions ) {
+
+		array_unshift( $actions, sprintf( '<a href="%s">%s</a>', admin_url( 'options-general.php?page=proxyflare' ), __( 'Settings', 'proxyflare' ) ) );
+
+		return $actions;
 	}
 
 	/**

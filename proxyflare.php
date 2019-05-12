@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: Proxyflare
- * Plugin URI: https://whitelabel.ltd
+ * Plugin URI: https://github.com/whitelabelltd/proxyflare
  * Description: Cloudflare functions without using a Global API Key. For use with Whitelabel Digital Sites
- * Version: 1.2
+ * Version: 1.2.1
  * Author: Whitelabel Digital
  * Author URI: http://whitelabel.ltd
  * Licence: GPLv2 or later
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || die( 'Cheatin&#8217; uh?' );
 
-define('PROXYFLARE_VERSION','1.2');
+define('PROXYFLARE_VERSION','1.2.1');
 define('PROXYFLARE_FILE',__FILE__);
 
 /**
@@ -55,7 +55,7 @@ $myUpdateChecker->setBranch('release');
 register_activation_hook( __FILE__, 'proxyflare_activate' );
 function proxyflare_activate() {
 	// Load API Keys If Found
-	$file='api.json';
+	$file=plugin_dir_path( PROXYFLARE_FILE ) . 'api.json';
 	if (file_exists($file)) {
 		$keys = json_decode(file_get_contents($file),1);
 		if (isset($keys['email']) && isset($keys['key'])) {
