@@ -3,7 +3,7 @@ namespace PROXYFLARE;
 
 class API {
 
-	private static $api_url = PROXYFLARE_API;
+	private static $api_url = 'https://proxyflare.wld.nz/api/v1/';
 
 	/**
 	 * Clears the Cloudflare Cache
@@ -55,6 +55,7 @@ class API {
 		if (empty($endpoint)) {
 			return false;
 		}
+		proxyflare()->log('Starting API Call');
 
 		// Set API Url for Custom Domain
 		if (defined('PROXYFLARE_API_DOMAIN')) {
@@ -62,7 +63,9 @@ class API {
 			$endpoint = str_replace($endpoint_domain,PROXYFLARE_API_DOMAIN,$endpoint);
 		}
 
-		$url = self::$api_url.$endpoint;
+		$url = self::get_api_url().$endpoint;
+
+		proxyflare()->log(' + URL: '.$url);
 
 		// Set Authentication Headers and Useragent
 		$args = array(
@@ -79,13 +82,42 @@ class API {
 
 		// Check Response
 		if ( !is_wp_error( $response ) ) {
+			proxyflare()->log(' - API Response ('.wp_remote_retrieve_response_code($response).'): '.wp_remote_retrieve_body($response) );
 			$response = json_decode( wp_remote_retrieve_body($response), true );
 			if (isset($response['success']) && true == $response['success']) {
+				proxyflare()->log(' + Success');
 				return true;
 			}
+		} else {
+			proxyflare()->log(' - API Error ('.wp_remote_retrieve_response_code($response).'): '.wp_remote_retrieve_body($response) );
 		}
 
 		return false;
+	}
+
+	/**
+	 * Gets the API URL
+	 */
+	public static function get_api_url() {
+		$url = self::$api_url;
+		if (defined('PROXYFLARE_API')) {
+			$url = PROXYFLARE_API;
+		}
+		return $url;
+	}
+
+	/**
+	 * Gets the domain from the API URL
+	 * @return bool
+	 */
+	public static function get_api_domain() {
+		$url = self::get_api_url();
+		$parsed_url = @parse_url( $url );
+		if ( ! $parsed_url || empty( $parsed_url['host'] ) ) {
+			return false;
+		}
+
+		return $parsed_url['host'];
 	}
 
 }

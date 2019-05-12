@@ -23,6 +23,12 @@ class PROXYFLARE {
 	private $options_name = 'proxyflare_options';
 
 	/**
+     * Debug Mode?
+	 * @var bool
+	 */
+	private $debug=false;
+
+	/**
 	 * Holds Options
 	 * @var array
 	 */
@@ -40,11 +46,6 @@ class PROXYFLARE {
 	 */
 	public function init() {
 
-	    // API URL
-		if (!defined('PROXYFLARE_API')) {
-			define('PROXYFLARE_API','https://proxyflare.wld.nz/api/v1/');
-		}
-
 		// Load Options
 		$this->options_load();
 
@@ -57,18 +58,38 @@ class PROXYFLARE {
 
 		// Add WP-Rocket Support
 		if ( $this->activated() ) {
-			add_action('after_rocket_clean_domain' , array( $this , 'clear_cache' ), 10, 3 );
+			add_action('after_rocket_clean_domain' , array( $this , 'wp_rocket_clear_cache' ), 10, 3 );
 		}
 
 		// Add Admin Menu
 		add_action('admin_menu', array( $this , 'admin_menu' ) );
 
-
 		// Add Admin Menu Bar Item
 		add_action('wp_loaded' , array( $this , 'admin_bar_check' ) );
 		add_action( 'wp_ajax_proxyflare_cache_clear', array( $this , 'admin_ajax_cache_clear' ) );
 
+		// Testing Cache Clearing on the options page
+		add_action( 'wp_ajax_proxyflare_cache_clear_test', array( $this , 'admin_ajax_cache_clear_test' ) );
+
+		// Whitelist API Server
+		add_filter( 'http_request_host_is_external', array( $this , 'whitelist_api_server'), 10, 3 );
+
 	}
+
+	/**
+     * Adds the domain API Server to the Whitelist of domains
+	 * @param $allow
+	 * @param $host
+	 * @param $url
+	 *
+	 * @return bool
+	 */
+	public function whitelist_api_server( $allow, $host, $url ) {
+		if ( $host == API::get_api_domain() ) {
+			$allow = true;
+        }
+		return $allow;
+    }
 
 	/**
 	 * Clears the cache after WP-Rocket has cleared theirs
@@ -77,6 +98,7 @@ class PROXYFLARE {
 	 * @param $url
 	 */
 	public function wp_rocket_clear_cache( $root, $lang, $url ) {
+		$this->log('WP-Rocket Cleared');
 		$this->clear_cache();
 	}
 
@@ -85,7 +107,9 @@ class PROXYFLARE {
 	 */
 	public function clear_cache() {
 		// Clear the Cloudflare Cache using the API
-		API::clear_cache();
+		if (!API::clear_cache() ) {
+		    $this->log(' - ERROR Clearing Cache');
+        }
 	}
 
 	/**
@@ -157,7 +181,6 @@ class PROXYFLARE {
 	 * Simple Cache Clearing function
 	 */
 	public function admin_ajax_cache_clear() {
-		error_log('admin_ajax_cache_clear');
 		if ( check_ajax_referer( 'proxyflare_cache_clear', 'security', false ) == false ) {
 			echo('Security Error');
 			wp_die();
@@ -172,6 +195,29 @@ class PROXYFLARE {
 			$response = 'Cache Purged !';
 		} else {
 			$response = 'ERROR Clearing Cache';
+		}
+		echo $response;
+		wp_die();
+	}
+
+	/**
+	 * Simple Cache Clearing function for testing
+	 */
+	public function admin_ajax_cache_clear_test() {
+		if ( check_ajax_referer( 'proxyflare_cache_clear_test', 'security', false ) == false ) {
+			echo('Security Error');
+			wp_die();
+		}
+		// Make sure the current user is allowed to do this
+		if (!$this->cap_actions) {
+			echo('Sorry you do not have permission to do this');
+			wp_die();
+		}
+		// Clear the cache!
+		if ( API::clear_cache() ) {
+			$response = 'Cache Purged Successfully on Cloudflare!';
+		} else {
+			$response = 'ERROR Clearing Cache, check your credentials and make sure the site has been added by Whitelabel Digital';
 		}
 		echo $response;
 		wp_die();
@@ -230,6 +276,41 @@ class PROXYFLARE {
 	}
 
 	/**
+	 * Is the plugin activated with the API Credentials?
+	 * @return bool
+	 */
+	public function activated() {
+		$api = $this->get('api_key','');
+		$email = $this->get('api_email','');
+		if (!empty($api) && !empty($email)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+     * Running in Debug Mode?
+	 * @return bool
+	 */
+	public function is_debug_mode() {
+	    return $this->debug;
+    }
+
+	/**
+     * Simple Logging in Debug Mode
+     * @todo add better logging functions
+	 * @param string $message
+	 */
+    public function log($message='') {
+	    if ( $this->is_debug_mode() ) {
+	        if (is_array($message) || is_object($message)) {
+	            $message = print_r($message,1);
+            }
+		    error_log('[Proxyflare] - '.$message);
+        }
+    }
+
+	/**
 	 * Load Options
 	 * JSON in DB to unserializing risks
 	 */
@@ -239,6 +320,12 @@ class PROXYFLARE {
 			$options = json_decode($options,1);
 			$this->options = $options;
 		}
+
+		// Debug Mode
+        if (defined('PROXYFLARE_DEBUG') && PROXYFLARE_DEBUG) {
+            $this->debug=true;
+        }
+
 	}
 
 	/**
@@ -251,19 +338,6 @@ class PROXYFLARE {
 			$options = json_encode( $options );
 			update_option( $this->options_name , $options );
 		}
-	}
-
-	/**
-	 * Is the plugin activated with the API Credentials?
-	 * @return bool
-	 */
-	private function activated() {
-		$api = $this->get('api_key','');
-		$email = $this->get('api_email','');
-		if (!empty($api) && !empty($email)) {
-			return true;
-		}
-		return false;
 	}
 
 	/**
