@@ -20,12 +20,12 @@ if( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
 	check_admin_referer( $action );
 
 	// Save Updated Options - Email
-	if (isset($_POST['proxyflare_api_email']) && !empty($_POST['proxyflare_api_email'])) {
+	if (isset($_POST['proxyflare_api_email'])) {
 		proxyflare()->set('api_email',$_POST['proxyflare_api_email']);
 	}
 
 	// Save Updated Options - Email
-	if (isset($_POST['proxyflare_api_key']) && !empty($_POST['proxyflare_api_key'])) {
+	if (isset($_POST['proxyflare_api_key'])) {
 	    // Avoid the mask being saved...
 	    if ($mask !== $_POST['proxyflare_api_key']) {
 		    proxyflare()->set('api_key',$_POST['proxyflare_api_key']);
@@ -56,12 +56,12 @@ if (!empty(proxyflare()->get('api_key',''))) {
     <table class="form-table">
         <tbody>
         <tr>
-            <th scope="row"><?php _e('API Email', 'proxyflare'); ?></th>
+            <th scope="row"><?php _e('Proxyflare API Email', 'proxyflare'); ?></th>
             <td><input type="text" name="proxyflare_api_email" value="<?php echo( esc_html( proxyflare()->get('api_email','') ) ); ?>">
             </td>
         </tr>
         <tr>
-            <th scope="row"><?php _e('API Key', 'proxyflare'); ?></th>
+            <th scope="row"><?php _e('Proxyflare API Key', 'proxyflare'); ?></th>
             <td><input type="password" name="proxyflare_api_key" value="<?php echo( esc_html( $password_field ) ); ?>">
             </td>
         </tr>
@@ -71,3 +71,43 @@ if (!empty(proxyflare()->get('api_key',''))) {
     <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="<?php _e('Save Changes', 'proxyflare'); ?>">
     </p>
 </form>
+
+<p>&nbsp;</p>
+<h2><?php _e('Cache Clearing', 'proxyflare'); ?></h2>
+<?php
+
+if (proxyflare()->activated()) {
+
+    // Testing Clearing Cache Button
+	$action_test = 'proxyflare_cache_clear_test';
+	$nonce_test  = wp_create_nonce( $action_test );
+
+	echo('<p>'.__('You can clear the cache using the button below, it automatically clears when using WP-Rocket.<br>If not using WP-Rocket you can clear the cache on any page using the admin-bar', 'proxyflare').'</p>');
+	?>
+    <div id="proxyflare_cache_clear_result" style="display: none" class="updated notice"> </div>
+    <br>
+    <a href="#" class="button" id="proxyflare_button_test"><?php _e( 'Clear Cache', 'proxyflare' ); ?></a>
+    <script type="text/javascript">
+        var obj_proxyflare_test = '';
+        jQuery("#proxyflare_button_test").on("click", function () {
+            if ( !jQuery( this ).attr('disabled') ) {
+                var old_text = jQuery(this).text();
+                jQuery(this).text('Clearing Cache...');
+                jQuery(this).attr('disabled', true );
+                var data = {
+                    'action': '<?php echo( $action_test ); ?>',
+                    'security': '<?php echo( $nonce_test ); ?>'
+                 };
+                obj_proxyflare_test = this;
+                jQuery.post(ajaxurl, data, function (response) {
+                    jQuery(obj_proxyflare_test).text(old_text);
+                    jQuery(obj_proxyflare_test).attr('disabled', false );
+                    jQuery('#proxyflare_cache_clear_result').fadeIn().text(response);
+                });
+            }
+        });
+    </script>
+	<?php
+} else {
+	_e('Please enter credentials above to activate the functionality of this plugin', 'proxyflare');
+}
