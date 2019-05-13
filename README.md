@@ -1,5 +1,8 @@
 # Proxyflare
-Proxy for handling Cloudflare functions for Whitelabel Digital Clients
+![Proxyflare Logo](https://github.com/whitelabelltd/proxyflare/raw/master/assets/images/logo-wp-options.png)\
+\
+Proxy for handling Cloudflare functions for Whitelabel Digital Clients.\
+Also restores visitor IP's when using Cloudflare.
 
 ### Why
 
