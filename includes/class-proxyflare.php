@@ -52,7 +52,8 @@ class PROXYFLARE {
 		// Get Helpers
 		$this->load_helpers(
 			array(
-				'API'
+				'API',
+                'IP'
 			)
 		);
 
