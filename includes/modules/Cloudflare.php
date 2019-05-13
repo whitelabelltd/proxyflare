@@ -66,9 +66,7 @@ class Cloudflare {
 	 * @source cloudflare.php - https://wordpress.org/plugins/cloudflare/
 	 */
 	private function set_real_ip() {
-
-		error_log('setting ip');
-
+		
 		$is_cf = ( isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) ? true : false;
 		if ( ! $is_cf ) {
 			return;
