@@ -6,6 +6,8 @@
  * @todo tidy up code
  */
 
+defined( 'ABSPATH' ) || die( 'Cheatin&#8217; uh?' );
+
 $action = 'proxyflare_options';
 $mask = '**************';
 $password_field = '';
@@ -72,6 +74,8 @@ $logo_path = plugin_dir_url( PROXYFLARE_FILE ) . 'assets/images/';
     <p>&nbsp;</p>
     <img src="<?php echo($logo_path); ?>logo-wp-options.png" srcset="<?php echo($logo_path); ?>logo-wp-options@2x.png 2x" alt="Proxyflare">
     <?php echo($updated_message); ?>
+    <h2><?php _e('Real IP Addresses', 'proxyflare'); ?></h2>
+    <p><?php _e('This plugin will also restore the visitor IP address if running behind cloudflare automatically so there is no need to run the Cloudflare plugin or other similar plugin', 'proxyflare'); ?></p>
     <h2><?php _e('API Credentials', 'proxyflare'); ?></h2>
     <?php _e('Enter your Proxyflare API details below.', 'proxyflare'); ?>
     <br><small><?php _e('Contact Whitelabel Digital for your credentials', 'proxyflare'); ?></small>

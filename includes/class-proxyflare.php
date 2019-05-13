@@ -56,6 +56,13 @@ class PROXYFLARE {
 			)
 		);
 
+		// Get Modules
+		$this->load_modules(
+			array(
+				'Cloudflare'
+			)
+		);
+
 		// Add WP-Rocket Support
 		if ( $this->activated() ) {
 			add_action('after_rocket_clean_domain' , array( $this , 'wp_rocket_clear_cache' ), 10, 3 );
@@ -384,6 +391,19 @@ class PROXYFLARE {
 			$this->options[$name]=$value;
 			if ($permanent) {
 				$this->options_save();
+			}
+		}
+	}
+
+	/**
+	 * Loads any needed Modules
+	 * @param array $modules
+	 */
+	private function load_modules($modules = array() ) {
+		$path = plugin_dir_path( PROXYFLARE_FILE ) . 'includes/modules/';
+		foreach ($modules as $module) {
+			if (file_exists($path.$module.'.php')) {
+				require_once($path.$module.'.php');
 			}
 		}
 	}
