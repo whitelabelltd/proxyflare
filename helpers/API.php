@@ -23,11 +23,12 @@ class API {
 
 	/**
 	 * Gets the current domain
-	 * @return string
+	 * @param bool $bypass_root_check
+	 *
+	 * @return bool|string
 	 */
-	private static function get_domain() {
-		$parse = parse_url( get_site_url() );
-		return $parse['host'];
+	private static function get_domain($bypass_root_check=false) {
+		return self::get_site_url($bypass_root_check);
 	}
 
 	/**
@@ -49,7 +50,9 @@ class API {
 	/**
 	 * Very basic post request
 	 * @param string $endpoint
+	 *
 	 * @return bool
+	 * @throws \LayerShifter\TLDExtract\Exceptions\RuntimeException
 	 */
 	private static function send($endpoint='') {
 		if (empty($endpoint)) {
@@ -59,8 +62,8 @@ class API {
 
 		// Set API Url for Custom Domain
 		if (defined('PROXYFLARE_API_DOMAIN')) {
-			$endpoint_domain = self::get_domain();
-			$endpoint = str_replace($endpoint_domain,PROXYFLARE_API_DOMAIN,$endpoint);
+			$endpoint_domain = self::get_domain(true);
+			$endpoint = str_replace($endpoint_domain,self::get_root_domain(PROXYFLARE_API_DOMAIN),$endpoint);
 		}
 
 		$url = self::get_api_url().$endpoint;
@@ -107,8 +110,36 @@ class API {
 	}
 
 	/**
+	 * Gets the local site url
+	 * @param bool $bypass_root_check
+	 *
+	 * @return bool|string|null
+	 * @throws \LayerShifter\TLDExtract\Exceptions\RuntimeException
+	 */
+	private static function get_site_url($bypass_root_check=false) {
+		$parse = parse_url( get_site_url() );
+
+		if (defined('PROXYFLARE_API_DOMAIN')) {
+			$parse['host'] = PROXYFLARE_API_DOMAIN;
+		}
+
+		if (true === $bypass_root_check) {
+			return $parse['host'];
+		}
+
+		// Root Domain
+		$domain = self::get_root_domain( $parse['host'] );
+		if (false === $domain) {
+			return false;
+		}
+
+		return $domain;
+	}
+
+	/**
 	 * Gets the domain from the API URL
-	 * @return bool
+	 * @return bool|string|null
+	 * @throws \LayerShifter\TLDExtract\Exceptions\RuntimeException
 	 */
 	public static function get_api_domain() {
 		$url = self::get_api_url();
@@ -117,7 +148,33 @@ class API {
 			return false;
 		}
 
-		return $parsed_url['host'];
+		// Root Domain
+		$domain = self::get_root_domain( $parsed_url['host'] );
+		if (false === $domain) {
+			return false;
+		}
+
+		return $domain;
+	}
+
+	/**
+	 * Gets the root domain
+	 * @param string $domain
+	 *
+	 * @return bool|string|null
+	 * @throws \LayerShifter\TLDExtract\Exceptions\RuntimeException
+	 */
+	public static function get_root_domain( $domain = '' ) {
+		$extract = new \LayerShifter\TLDExtract\Extract();
+		$result = $extract->parse( $domain );
+
+		$root = $result->getRegistrableDomain();
+
+		if ($root) {
+			return $root;
+		}
+
+		return false;
 	}
 
 }
