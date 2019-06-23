@@ -49,6 +49,9 @@ class PROXYFLARE {
 		// Load Options
 		$this->options_load();
 
+		// Composer Support
+		$this->load_composer();
+
 		// Get Helpers
 		$this->load_helpers(
 			array(
@@ -395,6 +398,16 @@ class PROXYFLARE {
 			}
 		}
 	}
+
+	/**
+	 * Loads the Autoload for Composer
+	 */
+	private function load_composer() {
+		$path = plugin_dir_path( PROXYFLARE_FILE ) . 'vendor/autoload.php';
+		if (file_exists($path)) {
+		    require_once ($path);
+        }
+    }
 
 	/**
 	 * Loads any needed Modules
