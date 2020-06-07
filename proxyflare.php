@@ -3,7 +3,7 @@
  * Plugin Name: Proxyflare
  * Plugin URI: https://github.com/whitelabelltd/proxyflare
  * Description: Cloudflare functions without using a Global API Key. For use with Whitelabel Digital Sites
- * Version: 1.4
+ * Version: 1.4.1
  * Author: Whitelabel Digital
  * Author URI: http://whitelabel.ltd
  * Licence: GPLv2 or later
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || die( 'Cheatin&#8217; uh?' );
 
-define('PROXYFLARE_VERSION','1.4');
+define('PROXYFLARE_VERSION','1.4.1');
 define('PROXYFLARE_FILE',__FILE__);
 
 /**
@@ -44,13 +44,13 @@ proxyflare();
 /**
  * Updater
  */
-require_once 'updater/plugin-update-checker.php';
-$myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
+require_once __DIR__ . '/vendor/autoload.php';
+$proxyflare_updater = Puc_v4_Factory::buildUpdateChecker(
 	'https://github.com/whitelabelltd/proxyflare',
 	__FILE__,
 	'proxyflare'
 );
-$myUpdateChecker->setBranch('release');
+$proxyflare_updater->setBranch('release');
 
 /**
  * Auto API Key Installer
