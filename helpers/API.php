@@ -133,6 +133,9 @@ class API {
 			return false;
 		}
 
+		// Remove www
+		$domain = str_replace('www.','',$domain);
+
 		return $domain;
 	}
 
