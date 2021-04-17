@@ -1,6 +1,8 @@
 <?php
 namespace PROXYFLARE;
 
+use LayerShifter\TLDExtract\Exceptions\RuntimeException;
+
 class API {
 
 	private static $api_url = 'https://proxyflare.wld.nz/api/v1/';
@@ -52,7 +54,7 @@ class API {
 	 * @param string $endpoint
 	 *
 	 * @return bool
-	 * @throws \LayerShifter\TLDExtract\Exceptions\RuntimeException
+	 * @throws RuntimeException
 	 */
 	private static function send($endpoint='') {
 		if (empty($endpoint)) {
@@ -114,7 +116,7 @@ class API {
 	 * @param bool $bypass_root_check
 	 *
 	 * @return bool|string|null
-	 * @throws \LayerShifter\TLDExtract\Exceptions\RuntimeException
+	 * @throws RuntimeException
 	 */
 	private static function get_site_url($bypass_root_check=false) {
 		$parse = parse_url( get_site_url() );
@@ -142,7 +144,7 @@ class API {
 	/**
 	 * Gets the domain from the API URL
 	 * @return bool|string|null
-	 * @throws \LayerShifter\TLDExtract\Exceptions\RuntimeException
+	 * @throws RuntimeException
 	 */
 	public static function get_api_domain() {
 		$url = self::get_api_url();
@@ -165,7 +167,7 @@ class API {
 	 * @param string $domain
 	 *
 	 * @return bool|string|null
-	 * @throws \LayerShifter\TLDExtract\Exceptions\RuntimeException
+	 * @throws RuntimeException
 	 */
 	public static function get_root_domain( $domain = '' ) {
 		$extract = new \LayerShifter\TLDExtract\Extract();
