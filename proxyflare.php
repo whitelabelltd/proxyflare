@@ -52,7 +52,8 @@ try {
 		__FILE__,
 		'proxyflare'
 	);
-	$proxyflare_updater->setBranch('release');
+	// Look for Releases Only
+	$proxyflare_updater->getVcsApi()->enableReleaseAssets();
 } catch (Exception $e) {
 	error_log('[Proxyflare] Updater Failed to Init ('.$e->getMessage().')');
 	error_log('[Proxyflare]  - Code: '.$e->getCode());
