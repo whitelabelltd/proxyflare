@@ -3,7 +3,7 @@
  * Plugin Name: Proxyflare
  * Plugin URI: https://github.com/whitelabelltd/proxyflare
  * Description: Cloudflare functions without using a Global API Key. For use with Whitelabel Digital Sites
- * Version: 1.4.3
+ * Version: 1.4.4
  * Author: Whitelabel Digital
  * Author URI: http://whitelabel.ltd
  * Licence: GPLv2 or later
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || die( 'Cheatin&#8217; uh?' );
 
-define('PROXYFLARE_VERSION','1.4.3');
+define('PROXYFLARE_VERSION','1.4.4');
 define('PROXYFLARE_FILE',__FILE__);
 
 /**
