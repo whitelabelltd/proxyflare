@@ -7,6 +7,7 @@
  * Author: Whitelabel Digital
  * Author URI: http://whitelabel.ltd
  * Licence: GPLv2 or later
+ * Plugin Folder: proxyflare
  *
  * Copyright 2019 Whitelabel Digital ( whitelabel.ltd )
  */

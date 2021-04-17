@@ -1,0 +1,57 @@
+name: WP Plugin ZIP
+on:
+  push:
+    branches:
+      - release
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set Plugin File
+        run: |
+          VER=$(grep -l ' * Plugin Folder:' *.php . 2>/dev/null | awk '{print $NF}')
+          echo "WP_PLUGIN_FILE=$VER" >> $GITHUB_ENV
+          echo "WP_PLUGIN_FILE=$VER"
+      - name: Set Plugin Version
+        run: |
+          VER=$(grep -w Version: ${{ env.WP_PLUGIN_FILE }} |grep -v -- -Version|awk '{print $NF}')
+          echo "WP_PLUGIN_VERSION=$VER" >> $GITHUB_ENV
+      - name: Set Plugin Folder
+        run: |
+          VER=$(grep -w "Plugin Folder:" ${{ env.WP_PLUGIN_FILE }} |grep -v -- -Folder|awk '{print $NF}')
+          echo "WP_PLUGIN_FOLDER=$VER" >> $GITHUB_ENV
+      - name: Create Wordpress Plugin Dir for ${{ env.WP_PLUGIN_FOLDER }}/${{ env.WP_PLUGIN_FILE }}
+        run: |
+          mkdir ${{ env.WP_PLUGIN_FOLDER }}
+          mv `ls | grep -v ${{ env.WP_PLUGIN_FOLDER }}` ${{ env.WP_PLUGIN_FOLDER }}/
+          mv ${{ env.WP_PLUGIN_FILE }} ${{ env.WP_PLUGIN_FOLDER }}/${{ env.WP_PLUGIN_FILE }}
+      - name: Zip Folder
+        run: zip -r release-${{ env.WP_PLUGIN_FOLDER }}.zip . -x "*.git/*" "*.github/*" "*_source/*" "*config.codekit3" "*.gitignore" "*phpcs.xml" "*Testing.php" "*test/*" "*.DS_Store" "*README.MD"
+      - name: Cleanup Folders
+        run: |
+          cd ${{ env.WP_PLUGIN_FOLDER }}
+          mv * ../
+          cd ../
+          rm -rf ${{ env.WP_PLUGIN_FOLDER }}
+          echo "Done"
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.WP_PLUGIN_VERSION }}
+          release_name: Release - v${{ env.WP_PLUGIN_VERSION }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release-${{ env.WP_PLUGIN_FOLDER }}.zip
+          asset_name: release-${{ env.WP_PLUGIN_FOLDER }}-v${{ env.WP_PLUGIN_VERSION }}.zip
+          asset_content_type: application/zip
