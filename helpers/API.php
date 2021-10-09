@@ -138,7 +138,34 @@ class API {
 		// Remove www
 		$domain = str_replace('www.','',$domain);
 
+		// Check for Staging Domains
+		if (self::is_staging_domain($domain)) {
+			proxyflare()->log(sprintf('Cache Not Cleared: Is Staging Domain (%s)', $domain ) );
+			return false;
+		}
+
 		return $domain;
+	}
+
+	/**
+	 * Checks if the domain is a staging domain
+	 * @param string $domain
+	 * @return bool
+	 */
+	public static function is_staging_domain($domain='') {
+		$list = array(
+			'.wpengine.com',
+			'.mywpengine.com',
+			'.flywheelsites.com',
+			'.flywheelstaging.com',
+		);
+
+		foreach ($list as $list_item) {
+			if (strpos($domain, $list_item) !== false) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
