@@ -1,10 +1,15 @@
 <?php
 namespace PROXYFLARE;
 
+use LayerShifter\TLDExtract\Exceptions\Exception;
 use LayerShifter\TLDExtract\Exceptions\RuntimeException;
 
 class API {
 
+	/**
+	 * URL for the API Server
+	 * @var string
+	 */
 	private static $api_url = 'https://proxyflare.wld.nz/api/v1/';
 
 	/**
@@ -14,13 +19,17 @@ class API {
 	 */
 	public static function clear_cache() {
 
-		// Build API Url
+		// Get the domain name
 		$domain_name = self::get_domain();
-		$endpoint = 'cache_clear/'.$domain_name.'/';
+		if (!$domain_name) {
+			return false;
+		}
+
+		// Build Endpoint Url
+		$endpoint = sprintf('cache_clear/%s/', $domain_name );
 
 		// Send the Request
 		return self::send( $endpoint );
-
 	}
 
 	/**
@@ -54,7 +63,6 @@ class API {
 	 * @param string $endpoint
 	 *
 	 * @return bool
-	 * @throws RuntimeException
 	 */
 	private static function send($endpoint='') {
 		if (empty($endpoint)) {
@@ -116,7 +124,6 @@ class API {
 	 * @param bool $bypass_root_check
 	 *
 	 * @return bool|string|null
-	 * @throws RuntimeException
 	 */
 	private static function get_site_url($bypass_root_check=false) {
 		$parse = parse_url( get_site_url() );
@@ -126,12 +133,20 @@ class API {
 		}
 
 		if (true === $bypass_root_check) {
+			if (self::is_staging_domain($parse['host'])) {
+				return false;
+			}
 			return $parse['host'];
 		}
 
 		// Root Domain
-		$domain = self::get_root_domain( $parse['host'] );
-		if (false === $domain) {
+		try {
+			$domain = self::get_root_domain( $parse['host'] );
+			if (false === $domain) {
+				return false;
+			}
+		} catch (Exception $e) {
+			proxyflare()->log('ERROR: '.$e->getMessage());
 			return false;
 		}
 
@@ -153,16 +168,19 @@ class API {
 	 * @return bool
 	 */
 	public static function is_staging_domain($domain='') {
-		$list = array(
-			'.wpengine.com',
-			'.mywpengine.com',
-			'.flywheelsites.com',
-			'.flywheelstaging.com',
-		);
+		if ($domain) {
+			$list = array(
+				'wpengine.com',
+				'mywpengine.com',
+				'flywheelsites.com',
+				'flywheelstaging.com',
+				'cloudwaysapps.com',
+			);
 
-		foreach ($list as $list_item) {
-			if (strpos($domain, $list_item) !== false) {
-				return true;
+			foreach ( $list as $list_item ) {
+				if ( strpos( $domain, $list_item ) !== false ) {
+					return true;
+				}
 			}
 		}
 		return false;
